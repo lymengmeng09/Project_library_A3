@@ -1,20 +1,19 @@
 <template>
     <div>
-
-        <!-- 🔍 Search Bar -->
-        <div>
-            <h1 class="text-3xl font-bold text-left mt-5 ml-20 ">Book Page</h1>
-            <Search v-model="searchQuery" />
-
+        <div class="flex  justify-between">
+            <div>
+                <h1 class="text-3xl font-bold text-left mt-5 ml-20 ">Book Page</h1>
+            </div>
+            <!-- 🔍 Search Bar -->
+            <div class="flex-grow flex justify-end  mr-30">
+                <Search v-model="searchQuery" />
+            </div>
+            <!-- 📚 Category Filter -->
+            <div class="flex justify-end mr-20">
+                <Category :categories="categories" v-model:selectedCategory="selectedCategory" />
+            </div>
         </div>
-        <!-- 📚 Category Filter -->
-        <div>
-            <Category :categories="categories" v-model:selectedCategory="selectedCategory" />
-        </div>
-
-
-
-
+        
         <!-- 📋 Add Book Form -->
         <div v-if="showForm" class="w-1/2 mx-auto mt-6 bg-gray-100 p-6 rounded-lg shadow">
             <h2 class="text-xl font-bold mb-4">Add New Book</h2>
@@ -49,7 +48,6 @@
                 </button>
             </form>
         </div>
-
 
         <!-- ➕ Add Book Button and Book List -->
         <div>
