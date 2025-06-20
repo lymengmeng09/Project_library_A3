@@ -6,4 +6,21 @@
         <router-link to="/" class="text-blue-500 hover:underline">Go back to Home</router-link>
     </div>
 </template>
-<script setup></script>
+<script setup>
+    import { ref,onMounted } from 'vue';
+    import axios from 'axios';
+
+    const members = ref([]);
+
+    onMounted(async ()=>{
+        {
+        try{
+            const res = await axios.get('http://192.168.108.11:8000/api/members')
+            members.value = res.data.data
+            console.log(res.data.data)
+        } catch(e){
+            console.log("fail")
+        }
+    }
+    })
+</script>
