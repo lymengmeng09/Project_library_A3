@@ -1,9 +1,16 @@
-<!-- research name -->
 <template>
-    <div class="flex flex-col items-center justify-center h-screen">
-        <h1 class="text-3xl font-bold mb-4">Member Page</h1>
-        <p class="text-lg mb-8">Welcome to the Member Page!</p>
-        <router-link to="/" class="text-blue-500 hover:underline">Go back to Home</router-link>
-    </div>
+    <Button />;
+    <CategoryFilter />;
+    <Search />;
+    <Memberpage />;
 </template>
-<script setup></script>
+
+<script setup>
+import Button from '@/components/Button.vue';
+import CategoryFilter from '@/components/CategoryFilter.vue';
+import Search from '@/components/Search.vue';
+import MemberTable from '@/components/MemberTable.vue';
+
+</script>
+
+<style lang="scss" scoped></style>
