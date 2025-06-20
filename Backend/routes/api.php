@@ -24,6 +24,6 @@ Route::post('/books', [BookController::class, 'store']);        // ✅ FIXED: Cr
 Route::put('/books/{id}', [BookController::class, 'update']);   // Update book
 Route::delete('/books/{id}', [BookController::class, 'destroy']); // Delete book
 Route::get('/books/search', [BookController::class, 'search']); // Search books
-// Route::get('/books/test', [BookController::class, 'test']);       // Test route for books
+Route::get('/books/test', [BookController::class, 'test']);       // Test route for books
 
 
