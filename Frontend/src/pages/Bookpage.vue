@@ -1,31 +1,25 @@
 <template>
     <div>
-        <h1 class="text-3xl font-bold text-center mt-10">Book Page</h1>
-        <p class="text-center mt-4">This is the book page where you can find information about books.</p>
 
         <!-- 🔍 Search Bar -->
-        <div class="flex justify-center mt-8">
-            <input v-model="searchQuery" type="text" placeholder="Search by title or ID..."
-                class="border border-gray-300 rounded-full px-6 py-2 w-1/2 focus:outline-none focus:ring-2 focus:ring-yellow-500" />
-        </div>
+        <div >
+            <h1 class="text-3xl font-bold text-left mt-5 ml-20 ">Book Page</h1>
+            <Search v-model="searchQuery" />
 
+        </div>
         <!-- 📚 Category Filter -->
-        <div class="flex flex-wrap justify-center mt-6 gap-2">
-            <button v-for="cat in categories" :key="cat" @click="selectedCategory = cat" :class="[
-                'px-4 py-2 rounded-full text-sm font-medium',
-                selectedCategory === cat ? 'bg-black text-white' : 'bg-gray-100 text-black hover:bg-gray-200'
-            ]">
-                {{ cat }}
-            </button>
+        <div>
+            <Category :categories="categories" v-model:selectedCategory="selectedCategory" />
         </div>
-
         <!-- ➕ Add Book Button -->
-        <div class="flex justify-center mt-6">
+        <div class="flex justify-end  mr-12">
             <button @click="showForm = !showForm"
                 class="bg-yellow-500 hover:bg-yellow-600 text-white font-semibold py-2 px-6 rounded-full transition duration-300">
                 {{ showForm ? 'Close Form' : '+ Add Book' }}
             </button>
         </div>
+
+
 
         <!-- 📋 Add Book Form -->
         <div v-if="showForm" class="w-1/2 mx-auto mt-6 bg-gray-100 p-6 rounded-lg shadow">
@@ -81,10 +75,14 @@
 
 <script setup>
 import { ref, computed } from 'vue'
+import Category from '@/components/CategoryFilter.vue'
+import Search from '@/components/Search.vue'
 
 const searchQuery = ref('')
 const selectedCategory = ref('All')
 const showForm = ref(false)
+
+const categories = ['All', 'Fiction', 'Non-Fiction', 'Science Fiction', 'Mystery']
 
 const books = ref([
     {
@@ -105,8 +103,6 @@ const books = ref([
     }
 ])
 
-const categories = ['All', 'Fiction', 'Non-Fiction', 'Science Fiction', 'Mystery']
-
 const newBook = ref({
     id: '',
     isBn: '',
@@ -126,7 +122,6 @@ const addBook = () => {
         newBook.value.category
     ) {
         books.value.push({ ...newBook.value })
-        // Clear form
         newBook.value = {
             id: '',
             isBn: '',
