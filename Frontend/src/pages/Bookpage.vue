@@ -2,7 +2,7 @@
     <div>
 
         <!-- 🔍 Search Bar -->
-        <div >
+        <div>
             <h1 class="text-3xl font-bold text-left mt-5 ml-20 ">Book Page</h1>
             <Search v-model="searchQuery" />
 
@@ -11,13 +11,7 @@
         <div>
             <Category :categories="categories" v-model:selectedCategory="selectedCategory" />
         </div>
-        <!-- ➕ Add Book Button -->
-        <div class="flex justify-end  mr-12">
-            <button @click="showForm = !showForm"
-                class="bg-yellow-500 hover:bg-yellow-600 text-white font-semibold py-2 px-6 rounded-full transition duration-300">
-                {{ showForm ? 'Close Form' : '+ Add Book' }}
-            </button>
-        </div>
+
 
 
 
@@ -56,17 +50,23 @@
             </form>
         </div>
 
-        <!-- 📘 Filtered Book List -->
-        <div class="flex justify-center mt-8">
-            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 w-10/12">
-                <div v-for="book in filteredBooks" :key="book.id"
-                    class="bg-white p-4 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300">
-                    <h2 class="text-xl font-semibold mb-1">{{ book.title }}</h2>
-                    <p class="text-sm text-gray-600">ID: {{ book.id }}</p>
-                    <p class="text-sm text-gray-600">ISBN: {{ book.isBn }}</p>
-                    <p class="text-sm text-gray-600">Year: {{ book.year }}</p>
-                    <p class="text-sm text-gray-600">Number: {{ book.number }}</p>
-                    <p class="text-sm text-gray-500">Category: {{ book.category }}</p>
+
+        <!-- ➕ Add Book Button and Book List -->
+        <div>
+            <Button :showForm="showForm" @toggle="showForm = !showForm" />
+
+            <!-- Book List -->
+            <div class="flex justify-center mt-8">
+                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 w-10/12">
+                    <div v-for="book in filteredBooks" :key="book.id"
+                        class="bg-white p-4 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300">
+                        <h2 class="text-xl font-semibold mb-1">{{ book.title }}</h2>
+                        <p class="text-sm text-gray-600">ID: {{ book.id }}</p>
+                        <p class="text-sm text-gray-600">ISBN: {{ book.isBn }}</p>
+                        <p class="text-sm text-gray-600">Year: {{ book.year }}</p>
+                        <p class="text-sm text-gray-600">Number: {{ book.number }}</p>
+                        <p class="text-sm text-gray-500">Category: {{ book.category }}</p>
+                    </div>
                 </div>
             </div>
         </div>
@@ -77,6 +77,7 @@
 import { ref, computed } from 'vue'
 import Category from '@/components/CategoryFilter.vue'
 import Search from '@/components/Search.vue'
+import Button from '@/components/Button.vue'
 
 const searchQuery = ref('')
 const selectedCategory = ref('All')
