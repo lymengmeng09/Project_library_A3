@@ -1,19 +1,24 @@
 <template>
   <div class="w-11/12 mx-auto mt-8">
-    <h1 class="text-3xl font-bold text-center">Author Page</h1>
-    <p class="text-center mt-4 text-gray-600">This is the author page where you can find information about authors.</p>
-
-    <!-- 🔍 Search + Range Filter -->
-    <div class="flex flex-wrap gap-4 justify-center items-center mt-8">
-      <!-- ✅ Use Search with v-model -->
+    <div class="flex justify-between items-center mt-6 mx-5">
+      <h1 class="text-3xl font-bold text-center">Author Page</h1>
+      <!-- 🔍 Search Bar -->
       <Search v-model="searchName" />
 
-      <input v-model.number="minBooks" type="number" placeholder="Min books"
-        class="border border-gray-300 rounded-lg px-4 py-2 w-28 focus:outline-none focus:ring-2 focus:ring-yellow-500" />
+      <!-- 🔍 Search + Range Filter -->
+      <div class="flex flex-wrap gap-4 justify-center items-center mt-8">
+        <input v-model.number="minBooks" type="number" placeholder="Min books"
+          class="border border-gray-300 rounded-lg px-4 py-2 w-28 focus:outline-none focus:ring-2 focus:ring-yellow-500" />
 
-      <input v-model.number="maxBooks" type="number" placeholder="Max books"
-        class="border border-gray-300 rounded-lg px-4 py-2 w-28 focus:outline-none focus:ring-2 focus:ring-yellow-500" />
+        <input v-model.number="maxBooks" type="number" placeholder="Max books"
+          class="border border-gray-300 rounded-lg px-4 py-2 w-28 focus:outline-none focus:ring-2 focus:ring-yellow-500" />
+      </div>
     </div>
+    <hr class="border-gray-300 my-4" />
+
+
+
+
 
     <!-- 📋 Author List -->
     <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mt-10">

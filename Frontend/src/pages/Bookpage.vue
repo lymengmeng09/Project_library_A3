@@ -1,23 +1,14 @@
 <template>
-    <div>
-
- 
-
+    <div class="w-11/12 mx-auto mt-8">
         <div class="flex justify-between items-center mt-6 mx-5">
-            <h1 class="text-3xl font-bold text-left mt-5 ml-20 ">Book Page</h1>
-
+            <h1 class="text-3xl font-bold text-left mt-5 ml-5 ">Book Page</h1>
             <!-- 🔍 Search Bar -->
-
             <Search v-model="searchQuery" />
 
             <!-- 📚 Category Filter -->
-
             <Category :categories="categories" v-model:selectedCategory="selectedCategory" />
-
         </div>
-
-
-
+        <hr class="border-gray-300 my-4" />
         <!-- 📋 Add Book Form -->
         <div v-if="showForm" class="w-1/2 mx-auto mt-6 bg-gray-100 p-6 rounded-lg shadow">
             <h2 class="text-xl font-bold mb-4">Add New Book</h2>
