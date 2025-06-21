@@ -1,42 +1,27 @@
 <template>
-  <header>
-    <img alt="Vue logo" class="logo" src="./assets/logo.svg" width="125" height="125" />
-
-    <div class="wrapper">
-      <HelloWorld msg="You did it!" />
-    </div>
-  </header>
-
-  <main>
-    <TheWelcome />
-  </main>
+  <div>
+    <h1>Books</h1>
+    <ul>
+      <li v-for="book in books" :key="book.id">
+        {{ book.title }} - {{ book.author }}
+      </li>
+    </ul>
+  </div>
 </template>
 
-<style scoped>
-header {
-  line-height: 1.5;
-}
+<script setup>
+import { ref, onMounted } from 'vue'
 
-.logo {
-  display: block;
-  margin: 0 auto 2rem;
-}
+const books = ref([])
 
-@media (min-width: 1024px) {
-  header {
-    display: flex;
-    place-items: center;
-    padding-right: calc(var(--section-gap) / 2);
-  }
-
-  .logo {
-    margin: 0 2rem 0 0;
-  }
-
-  header .wrapper {
-    display: flex;
-    place-items: flex-start;
-    flex-wrap: wrap;
-  }
-}
-</style>
+onMounted(() => {
+  fetch("http://127.0.0.1:8080/api/books")
+    .then(response => response.json())
+    .then(data => {
+      books.value = data
+    })
+    .catch(error => {
+      console.error("Error fetching books:", error)
+    })
+})
+</script>

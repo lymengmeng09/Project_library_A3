@@ -1,18 +1,8 @@
 <?php
 
+use App\Http\Controllers\BookController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-<<<<<<< HEAD
-use App\Http\Controllers\BookController;
-
-
-
-
-
-// Test route
-Route::get('/test', function () {
-    return response()->json(['message' => 'API working!']);
-=======
 use App\http\Controllers\MemberController;
 /*
 |--------------------------------------------------------------------------
@@ -37,7 +27,6 @@ Route::prefix('/members')->group(function(){
 
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
->>>>>>> 891ac87b162fb8f949a6d3bd752315337a2d90eb
 });
 
 
