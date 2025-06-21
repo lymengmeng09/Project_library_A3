@@ -1,8 +1,9 @@
 <?php
 
+use App\Http\Controllers\BookController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-
+use App\http\Controllers\MemberController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -14,6 +15,32 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
+Route::prefix('/members')->group(function(){
+    Route::get('/',[MemberController::class,"index"])->name("/allmembers");
+    Route::put("/edit/{id}",[MemberController::class, 'edit']);
+    Route::post("/create",[MemberController::class, 'create']);
+    Route::delete("/delete/{id}", [MemberController::class, 'destroy']);
+    Route::post('/store', [MemberController::class, 'store']);
+    Route::get("/show/{id}", [MemberController::class, 'show']);
+    Route::put('/update/{id}', [MemberController::class, 'update']);
+});
+
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
+
+
+Route::post('/', function () {
+    return response()->json(['message' => 'POST request received!']);
+});
+
+// Books routes
+Route::get('/books', [BookController::class, 'index']);
+Route::get('/books/{id}', [BookController::class, 'show']);
+Route::post('/books', [BookController::class, 'store']);
+Route::put('/books/{id}', [BookController::class, 'update']);
+Route::delete('/books/{id}', [BookController::class, 'destroy']);
+Route::get('/search', [BookController::class, 'search']);
+
+
+
