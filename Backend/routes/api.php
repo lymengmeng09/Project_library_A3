@@ -7,6 +7,7 @@ use App\Http\Controllers\BookController;
 
 
 
+
 // Test route
 Route::get('/test', function () {
     return response()->json(['message' => 'API working!']);
@@ -18,12 +19,12 @@ Route::post('/', function () {
 });
 
 // Books routes
-Route::get('/books', [BookController::class, 'index']);         // GET all books
-Route::get('/books/{id}', [BookController::class, 'show']);     // GET single book
-Route::post('/books', [BookController::class, 'store']);        // ✅ FIXED: Create book
-Route::put('/books/{id}', [BookController::class, 'update']);   // Update book
-Route::delete('/books/{id}', [BookController::class, 'destroy']); // Delete book
-Route::get('/books/search', [BookController::class, 'search']); // Search books
-Route::get('/books/test', [BookController::class, 'test']);       // Test route for books
+Route::get('/books', [BookController::class, 'index']);
+Route::get('/books/{id}', [BookController::class, 'show']);
+Route::post('/books', [BookController::class, 'store']);
+Route::put('/books/{id}', [BookController::class, 'update']);
+Route::delete('/books/{id}', [BookController::class, 'destroy']);
+Route::get('/search', [BookController::class, 'search']);
+
 
 
