@@ -4,6 +4,7 @@ use App\Http\Controllers\BookController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\http\Controllers\MemberController;
+use App\http\Controllers\AuthorController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -15,6 +16,7 @@ use App\http\Controllers\MemberController;
 |
 */
 
+//route member
 Route::prefix('/members')->group(function(){
     Route::get('/',[MemberController::class,"index"])->name("/allmembers");
     Route::put("/edit/{id}",[MemberController::class, 'edit']);
@@ -25,14 +27,18 @@ Route::prefix('/members')->group(function(){
     Route::put('/update/{id}', [MemberController::class, 'update']);
 });
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
+//route author
+Route::prefix('/authors')->group(function(){
+    Route::get('/',[AuthorController::class,"index"])->name("/allauthors");
+    Route::put("/edit/{id}",[AuthorController::class, 'edit']);
+    Route::post("/create",[AuthorController::class, 'create']);
+    Route::delete("/delete/{id}", [AuthorController::class, 'destroy']);
+    Route::post('/store', [AuthorController::class, 'store']);
+    Route::get("/show/{id}", [AuthorController::class, 'show']);
+    Route::put('/update/{id}', [AuthorController::class, 'update']);
 });
 
 
-Route::post('/', function () {
-    return response()->json(['message' => 'POST request received!']);
-});
 
 // Books routes
 Route::get('/books', [BookController::class, 'index']);
@@ -44,3 +50,6 @@ Route::get('/search', [BookController::class, 'search']);
 
 
 
+Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
+    return $request->user();
+});
