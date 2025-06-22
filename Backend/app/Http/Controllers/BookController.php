@@ -126,16 +126,14 @@ class BookController extends Controller
         $book = BookModel::find($id);
 
         if (!$book) {
-            return response()->json([
-                'message' => 'Book not found'
-            ], 404);
+            return response()->json(['message' => 'Book not found'], 404);
         }
 
         $validated = $request->validate([
             'title' => 'sometimes|string',
             'author' => 'sometimes|string',
             'ISBN' => 'sometimes|string|unique:books,ISBN,' . $id,
-            'image' => 'sometimes|string',
+            'image' => 'sometimes|nullable|string',
             'category' => 'sometimes|string',
             'publication_year' => 'sometimes|integer',
             'available_copies' => 'sometimes|integer',

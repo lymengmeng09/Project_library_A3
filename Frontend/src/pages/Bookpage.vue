@@ -24,7 +24,7 @@
                     class="border p-2 rounded w-full mb-3" />
                 <select v-model="newBook.category" class="border p-2 rounded w-full mb-3" required>
                     <option disabled value="">Select Category</option>
-                    <option v-for="cat in categories" :key="cat" v-if="cat !== 'All'">{{ cat }}</option>
+                    <option v-for="cat in filteredCategories" :key="cat">{{ cat }}</option>
                 </select>
                 <input v-model.number="newBook.publication_year" type="number" placeholder="Publication Year"
                     class="border p-2 rounded w-full mb-3" required />
@@ -65,21 +65,30 @@
                             <img :src="book.image" alt="Book cover" class="w-full h-full object-cover" />
                         </div>
                         <h1 class="font-bold text-xl">{{ book.title || 'Untitled' }}</h1>
+                        
+                        <p class="text-sm text-zinc-500 leading-6">ID: {{ book.id }}</p>
                         <p class="text-sm text-zinc-500 leading-6">Author: {{ book.author || 'Unknown' }}</p>
                         <p class="text-sm text-zinc-500 leading-6">ISBN: {{ book.ISBN || 'N/A' }}</p>
-                        <p class="text-sm text-zinc-500 leading-6">Publication Year: {{ book.publication_year || 'N/A'
-                            }}</p>
+                        <p class="text-sm text-zinc-500 leading-6">
+                            Publication Year: {{ book.publication_year || 'N/A' }}
+                        </p>
                         <p class="text-sm text-zinc-500 leading-6">Available Copies: {{ book.available_copies || 0 }}
                         </p>
                         <p class="text-sm text-zinc-500 leading-6">Category: {{ book.category || 'None' }}</p>
                     </div>
                     <div class="flex gap-2 mt-3 justify-end">
                         <button @click="editBook(book)"
-                            class="px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600">Edit</button>
+                            class="px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600">
+                            Edit
+                        </button>
                         <button @click="deleteBook(book.id)"
-                            class="px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600">Delete</button>
+                            class="px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600">
+                            Delete
+                        </button>
                         <button @click="showDetails(book)"
-                            class="px-3 py-1 bg-gray-500 text-white rounded hover:bg-gray-600">Details</button>
+                            class="px-3 py-1 bg-gray-500 text-white rounded hover:bg-gray-600">
+                            Details
+                        </button>
                     </div>
                 </div>
             </div>
@@ -104,20 +113,22 @@ const isLoading = ref(true)
 const books = ref([])
 const categories = ['All', 'Fiction', 'Science Fiction', 'Mystery', 'Programming']
 
-// Fetch & map API data on mount
+const filteredCategories = computed(() => categories.filter(cat => cat !== 'All'))
+
+// Fetch books from backend API
 onMounted(async () => {
     try {
         const res = await axios.get('http://127.0.0.1:8000/api/books')
-        books.value = res.data.data
+        books.value = res.data.data // assuming your API returns { message, data: [...] }
     } catch (error) {
-        console.error('Failed:', error)
+        console.error('Failed to load books:', error)
         alert('Failed to load books data.')
     } finally {
         isLoading.value = false
     }
 })
 
-
+// Book form data model
 const newBook = ref({
     id: '',
     title: '',
@@ -127,9 +138,10 @@ const newBook = ref({
     image: '',
     category: '',
     publication_year: null,
-    available_copies: null
+    available_copies: null,
 })
 
+// Show/hide form toggle
 function toggleForm() {
     showForm.value = !showForm.value
     if (!showForm.value) {
@@ -139,59 +151,7 @@ function toggleForm() {
     }
 }
 
-async function saveBook() {
-    // NOTE: jsonplaceholder API won't actually save your data; this is just structure for your own backend later
-    if (isEditing.value) {
-        // Update local book for demo (no real PUT request)
-        const index = books.value.findIndex(b => b.id === editingBookId.value)
-        if (index !== -1) {
-            books.value[index] = { ...newBook.value }
-        }
-        alert('Book updated locally (demo)')
-    } else {
-        // Add new book with a new ID (fake)
-        const newId = books.value.length ? Math.max(...books.value.map(b => b.id)) + 1 : 1
-        books.value.push({ ...newBook.value, id: newId })
-        alert('Book added locally (demo)')
-    }
-    resetForm()
-    showForm.value = false
-    isEditing.value = false
-    editingBookId.value = null
-}
-
-function deleteBook(id) {
-    if (!confirm('Are you sure you want to delete this book?')) return
-    books.value = books.value.filter(book => book.id !== id)
-    alert('Book deleted locally (demo)')
-}
-
-function editBook(book) {
-    newBook.value = { ...book }
-    editingBookId.value = book.id
-    isEditing.value = true
-    showForm.value = true
-}
-
-function showDetails(book) {
-    alert(`
-      Title: ${book.title}
-      Author: ${book.author}
-      ISBN: ${book.ISBN}
-      Published: ${book.published_date}
-      Category: ${book.category}
-      Year: ${book.publication_year}
-      Available: ${book.available_copies}
-    `)
-}
-
-function cancelEdit() {
-    resetForm()
-    showForm.value = false
-    isEditing.value = false
-    editingBookId.value = null
-}
-
+// Reset form fields
 function resetForm() {
     newBook.value = {
         id: '',
@@ -202,14 +162,95 @@ function resetForm() {
         image: '',
         category: '',
         publication_year: null,
-        available_copies: null
+        available_copies: null,
     }
 }
 
+// Save book (create or update)
+async function saveBook() {
+    try {
+        // Normalize image to string to avoid backend validation errors
+        if (!newBook.value.image) newBook.value.image = ''
+
+        // Make sure published_date is formatted YYYY-MM-DD for <input type="date">
+        if (newBook.value.published_date && newBook.value.published_date.length > 10) {
+            newBook.value.published_date = newBook.value.published_date.slice(0, 10)
+        }
+
+        if (isEditing.value) {
+            const res = await axios.put(`http://127.0.0.1:8000/api/books/update/${editingBookId.value}`, newBook.value)
+            const index = books.value.findIndex(b => b.id === editingBookId.value)
+            if (index !== -1) {
+                books.value[index] = res.data.data
+            }
+            alert('Book updated successfully.')
+        } else {
+            const res = await axios.post('http://127.0.0.1:8000/api/books/store', newBook.value)
+            books.value.push(res.data.data)
+            alert('Book added successfully.')
+        }
+        resetForm()
+        showForm.value = false
+        isEditing.value = false
+        editingBookId.value = null
+    } catch (error) {
+        console.error('Failed to save book:', error.response || error)
+        alert('Failed to save book.')
+    }
+}
+
+// Delete a book by ID
+async function deleteBook(id) {
+    if (!confirm('Are you sure you want to delete this book?')) return
+    try {
+        await axios.delete(`http://127.0.0.1:8000/api/books/destroy/${id}`)
+        books.value = books.value.filter(book => book.id !== id)
+        alert('Book deleted successfully.')
+    } catch (error) {
+        console.error('Failed to delete book:', error)
+        alert('Failed to delete book.')
+    }
+}
+
+// Open edit form and fill with book data
+function editBook(book) {
+    newBook.value = { ...book }
+
+    // Format date for date input
+    if (book.published_date && book.published_date.length > 10) {
+        newBook.value.published_date = book.published_date.slice(0, 10)
+    }
+
+    editingBookId.value = book.id
+    isEditing.value = true
+    showForm.value = true
+}
+
+// Show book details alert (optional)
+function showDetails(book) {
+    alert(`
+      Title: ${book.title}
+      Author: ${book.author}
+      ISBN: ${book.ISBN}
+      Published: ${book.published_date}
+      Category: ${book.category}
+      Year: ${book.publication_year}
+      Available Copies: ${book.available_copies}
+    `)
+}
+
+// Cancel edit & reset form
+function cancelEdit() {
+    resetForm()
+    showForm.value = false
+    isEditing.value = false
+    editingBookId.value = null
+}
+
+// Computed filtered list by search and category
 const filteredBooks = computed(() => {
     return (books.value || []).filter(book => {
-        const matchesCategory =
-            selectedCategory.value === 'All' || book.category === selectedCategory.value
+        const matchesCategory = selectedCategory.value === 'All' || book.category === selectedCategory.value
         const searchLower = searchQuery.value.toLowerCase()
         const matchesSearch =
             book.title?.toLowerCase().includes(searchLower) || book.ISBN?.toLowerCase().includes(searchLower)
