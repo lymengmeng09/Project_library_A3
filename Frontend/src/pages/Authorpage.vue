@@ -64,7 +64,7 @@
           required
         />
         <button
-          type="submit"
+        type="submit"
           class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 transition"
         >
           Add Author
@@ -81,7 +81,7 @@
         <div>
           <h2 class="text-xl font-semibold">{{ author.name }}</h2>
           <p class="text-gray-600 text-sm">📅 DOB: {{ author.dob }}</p>
-          <p class="text-gray-600 text-sm">📚 Books: {{ author.books }}</p>
+          <p class="text-gray-600 text-sm">📚 Books: {{ author.written_book }}</p>
           <p class="text-gray-600 text-sm">🌍 Nationality: {{ author.nationality }}</p>
         </div>
 
@@ -95,7 +95,16 @@
         </div>
       </div>
     </div>
-
+    <!-- Author Details View -->
+<div v-if="detailAuthor" class="max-w-md mx-auto mt-10 bg-white border border-gray-300 p-6 rounded shadow">
+  <h2 class="text-xl font-bold mb-4">Author Details</h2>
+  <p><strong>Name:</strong> {{ detailAuthor.name }}</p>
+  <p><strong>DOB:</strong> {{ detailAuthor.dob }}</p>
+  <p><strong>Books Written:</strong> {{ detailAuthor.written_book }}</p>
+  <p><strong>Nationality:</strong> {{ detailAuthor.nationality }}</p>
+  <button @click="detailAuthor = null"
+    class="mt-4 px-4 py-2 bg-gray-600 text-white rounded hover:bg-gray-700">Close</button>
+</div>
 
     <p v-else class="text-center text-gray-500 mt-10">No authors found matching your criteria.</p>
   </div>
@@ -115,6 +124,10 @@ const searchName = ref('')
 const minBooks = ref(0)
 const maxBooks = ref(100)
 const showForm = ref(false)
+const isEditing = ref(false)
+const selectedAuthorId = ref(null)
+const detailAuthor = ref(null)
+
 
 const newAuthor = ref({
   name: '',
@@ -127,7 +140,7 @@ onMounted(async () => {
   isLoading.value = true
   error.value = null
   try {
-    const res = await axios.get('http://192.168.108.11:8000/api/authors')
+    const res = await axios.get('http://172.20.10.3:8000/api/authors')
     console.log('API response:', res.data)
 
     // Use the "data" array from your API response
@@ -151,29 +164,52 @@ const filteredAuthors = computed(() => {
 const addAuthor = async () => {
   const a = newAuthor.value
 
-  if (
-    a.name.trim() &&
-    a.dob &&
-    a.written_book >= 0 &&
-    a.nationality.trim()
-  ) {
-    try {
-      const response = await axios.post('http://192.168.108.11:8000/api/authors/create', a)
-      authors.value.push(response.data)
-      newAuthor.value = {
-        name: '',
-        dob: '',
-        written_book: 0,
-        nationality: '',
-      }
-      showForm.value = false
-    } catch (err) {
-      alert('Failed to add author: ' + (err.response?.data?.message || err.message))
-    }
-  } else {
+  if (!a.name || !a.dob || a.written_book < 0 || !a.nationality) {
     alert('Please fill all fields correctly.')
+    return
+  }
+
+  try {
+    if (isEditing.value) {
+      // UPDATE
+      await axios.put(`http://192.168.108.11:8000/api/authors/${selectedAuthorId.value}`, a)
+      alert('Author updated successfully.')
+    } else {
+      // CREATE
+      const res = await axios.post('http://192.168.108.11:8000/api/authors', a)
+      authors.value.push(res.data.data)
+    }
+
+    resetForm()
+  } catch (err) {
+    alert('Error: ' + (err.response?.data?.message || err.message))
   }
 }
 
+
+// Delete author
+const deleteAuthor = async (id) => {
+  if (!confirm('Are you sure you want to delete this author?')) return
+  try {
+    await axios.delete(`http://172.20.10.3:8000/api/authors/${id}`)
+    authors.value = authors.value.filter(a => a.id !== id)
+    console.log('Deleting author ID:', id)
+  } catch (err) {
+    alert('Failed to delete author: ' + (err.response?.data?.message || err.message))
+  }
+}
+
+// View detail
+const showDetails = (author) => {
+  detailAuthor.value = author
+}
+
+// Reset form state
+const resetForm = () => {
+  newAuthor.value = { name: '', dob: '', written_book: 0, nationality: '' }
+  showForm.value = false
+  isEditing.value = false
+  selectedAuthorId.value = null
+}
 
 </script>
