@@ -1,16 +1,13 @@
-
 <template>
-  <header class="shadow-md">
+  <header>
     <Navigation />
   </header>
- 
-  <router-view></router-view>
+
+  <main class="mt-16">
+    <router-view />
+  </main>
 </template>
 
-
-
 <script setup>
-// components import
 import Navigation from "@/components/Navigation.vue";
-
 </script>
