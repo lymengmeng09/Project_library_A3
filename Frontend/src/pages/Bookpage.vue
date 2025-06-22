@@ -70,24 +70,27 @@ import Button from '@/components/Button.vue'
 const searchQuery = ref('')
 const selectedCategory = ref('All')
 const showForm = ref(false)
-const categories = ['All', 'Fiction', 'Non-Fiction', 'Science Fiction', 'Mystery']
+
+const categories = ['All', 'Fiction',  'Science Fiction', 'Mystery','Programming']
+
 const books = ref([])
 const isLoading = ref(true)
 
 onMounted(() => {
-    fetch('http://127.0.0.1:8080/api/books')
-        .then(res => res.json())
-        .then(data => {
-            books.value = data // or data.data if API wraps it
+    fetch("http://192.168.108.11:8000/api/books")
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            return response.json()
         })
-        .catch(err => {
-            console.error('Error fetching books:', err)
+        .then(data => {
+            books.value = data // Adjust if API wraps in { data: [...] }
         })
         .finally(() => {
             isLoading.value = false
         })
 })
-
 const newBook = ref({
     id: '',
     isbn: '',
