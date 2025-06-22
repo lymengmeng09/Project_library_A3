@@ -253,9 +253,12 @@ const filteredBooks = computed(() => {
         const matchesCategory = selectedCategory.value === 'All' || book.category === selectedCategory.value
         const searchLower = searchQuery.value.toLowerCase()
         const matchesSearch =
-            book.title?.toLowerCase().includes(searchLower) || book.ISBN?.toLowerCase().includes(searchLower)
+            book.title?.toLowerCase().includes(searchLower) ||
+            book.ISBN?.toLowerCase().includes(searchLower) ||
+            String(book.id).includes(searchLower)
         return matchesCategory && matchesSearch
     })
 })
+
 </script>
   
