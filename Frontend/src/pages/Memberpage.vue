@@ -1,8 +1,8 @@
 <template>
-  <div>
+  <div class="w-11/12 mx-auto ">
     <!-- Title and Search Bar -->
-    <div class="flex flex-col md:flex-row justify-between items-center mt-5 mx-20 gap-4">
-      <h1 class="text-3xl font-bold text-left">Member Page</h1>
+    <div class="flex justify-between items-center  flex-wrap gap-4">
+      <h1 class="text-3xl font-bold text-left mt-5 ml-5">Member Page</h1>
       <Search v-model="searchQuery" class="flex-shrink-0" />
     </div>
     <hr class="border-gray-300 my-4" />

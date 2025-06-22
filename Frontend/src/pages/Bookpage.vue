@@ -1,6 +1,6 @@
 <template>
-    <div class="w-11/12 mx-auto mt-24"> <!-- spacing for sticky navbar -->
-        <div class="flex justify-between items-center mt-6 mx-5 flex-wrap gap-4">
+    <div class="w-11/12 mx-auto "> <!-- spacing for sticky navbar -->
+        <div class="flex justify-between items-center  flex-wrap gap-4">
             <h1 class="text-3xl font-bold text-left mt-5 ml-5">Book Page</h1>
 
             <!-- Search Bar -->
