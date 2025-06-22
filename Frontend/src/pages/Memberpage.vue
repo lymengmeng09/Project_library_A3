@@ -51,32 +51,25 @@
   </div>
 </template>
 <script setup>
-    import { ref,onMounted } from 'vue';
-    import axios from 'axios';
-
-    const members = ref([]);
-
-    onMounted(async ()=>{
-        {
-        try{
-            const res = await axios.get('http://192.168.108.11:8000/api/members')
-            members.value = res.data.data
-            console.log(res.data.data)
-        } catch(e){
-            console.log("fail")
-        }
-    }
-    })
-
-
-
-import { ref, computed } from 'vue'
+import { ref, onMounted, computed } from 'vue'
+import axios from 'axios'
 import Search from '@/components/Search.vue'
 import Button from '@/components/Button.vue'
 
+const members = ref([])
+
+onMounted(async () => {
+  try {
+    const res = await axios.get('http://192.168.108.11:8000/api/members')
+    members.value = res.data.data
+    console.log(res.data.data)
+  } catch (e) {
+    console.log("fail")
+  }
+})
+
 const searchQuery = ref('')
 const showForm = ref(false)
-
 
 const newMember = ref({
   id: '',
@@ -108,3 +101,4 @@ const filteredMembers = computed(() => {
   })
 })
 </script>
+
