@@ -41,15 +41,15 @@ class AuthorController extends Controller
      */
     public function store(Request $request)
     {
-        $author = new Author();
-        $author->name = $request->name;
-        $author->nationality = $request->nationality;
-        $author->written_book = $request->written_book;
-        $author->dob = $request->dob;
-        $author->save();
+        $author = Author::create([
+        'name' => $request->name,
+        'dob' => $request->dob,
+        'written_book' => $request->written_book,
+        'nationality' => $request->nationality,
+    ]);
 
     return response()->json([
-        'message' => 'Author stored successfully',
+        'message' => 'Author created successfully',
         'data' => $author
     ], 201);
     }
@@ -116,17 +116,15 @@ class AuthorController extends Controller
      */
     public function destroy(string $id)
     {
-                $author = Author::find($id);
+    $author = Author::find($id);
 
-        if (!$author) {
-            return response()->json(['message' => 'Author not found'], 404);
-        }
+    if (!$author) {
+        return response()->json(['message' => 'Author not found'], 404);
+    }
 
-        $author->delete();
+    $author->delete();
 
-        return response()->json([
-            'message' => 'Author deleted successfully'
-        ]);
+    return response()->json(['message' => 'Author deleted successfully']);
 
     }
 }
