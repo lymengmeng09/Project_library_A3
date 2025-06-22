@@ -34,16 +34,21 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import Search from '@/components/Search.vue'
 
-const authors = ref([
-  { name: 'J.K. Rowling', dob: '1965-07-31', books: 15, nationality: 'British' },
-  { name: 'George R.R. Martin', dob: '1948-09-20', books: 10, nationality: 'American' },
-  { name: 'Haruki Murakami', dob: '1949-01-12', books: 20, nationality: 'Japanese' },
-  { name: 'Agatha Christie', dob: '1890-09-15', books: 85, nationality: 'British' },
-  { name: 'Dan Brown', dob: '1964-06-22', books: 7, nationality: 'American' }
-])
+const authors = ref([])
+
+onMounted(() => {
+  fetch("http://127.0.0.1:8080/api/authors") // Change to actual author API
+    .then(response => response.json())
+    .then(data => {
+      authors.value = data // or data.data if API response wraps the array
+    })
+    .catch(error => {
+      console.error("Error fetching authors:", error)
+    })
+})
 
 const searchName = ref('')
 const minBooks = ref(0)

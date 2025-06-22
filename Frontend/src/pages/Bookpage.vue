@@ -67,7 +67,7 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import Category from '@/components/CategoryFilter.vue'
 import Search from '@/components/Search.vue'
 import Button from '@/components/Button.vue'
@@ -78,28 +78,22 @@ const showForm = ref(false)
 
 const categories = ['All', 'Fiction', 'Non-Fiction', 'Science Fiction', 'Mystery']
 
-const books = ref([
-    {
-        id: 'B001',
-        isBn: '978-1234567890',
-        title: 'The Time Machine',
-        year: 1895,
-        number: 1,
-        category: 'Science Fiction'
-    },
-    {
-        id: 'B002',
-        isBn: '978-9876543210',
-        title: 'Atomic Habits',
-        year: 2018,
-        number: 2,
-        category: 'Non-Fiction'
-    }
-])
+const books = ref([])
+
+onMounted(() => {
+    fetch("http://127.0.0.1:8080/api/books")
+        .then(response => response.json())
+        .then(data => {
+            books.value = data // Or data.data if API wraps books inside data property
+        })
+        .catch(error => {
+            console.error("Error fetching books:", error)
+        })
+})
 
 const newBook = ref({
     id: '',
-    isBn: '',
+    isbn: '',
     title: '',
     year: '',
     number: '',
@@ -109,7 +103,7 @@ const newBook = ref({
 const addBook = () => {
     if (
         newBook.value.id &&
-        newBook.value.isBn &&
+        newBook.value.isbn &&
         newBook.value.title &&
         newBook.value.year &&
         newBook.value.number &&
@@ -118,7 +112,7 @@ const addBook = () => {
         books.value.push({ ...newBook.value })
         newBook.value = {
             id: '',
-            isBn: '',
+            isbn: '',
             title: '',
             year: '',
             number: '',
