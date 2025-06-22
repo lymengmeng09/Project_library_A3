@@ -89,7 +89,7 @@ onMounted(() => {
             return response.json()
         })
         .then(data => {
-            books.value = data // Adjust if API wraps in { data: [...] }
+            books.value = data 
         })
         .catch(error => {
             console.error("Error fetching books:", error)
@@ -113,20 +113,43 @@ const addBook = () => {
         newBook.value.number &&
         newBook.value.category
     ) {
-        books.value.push({ ...newBook.value })
-        newBook.value = {
-            id: '',
-            isbn: '',
-            title: '',
-            year: '',
-            number: '',
-            category: ''
-        }
-        showForm.value = false
+        fetch("http://192.168.108.11:8000/api/books/create", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            },
+            body: JSON.stringify(newBook.value)
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            return response.json();
+        })
+        .then(data => {
+            books.value.push(data); // Add newly created book to list
+            newBook.value = {
+                id: '',
+                ISBN: '',
+                title: '',
+                image:'',
+                year: '',
+                publication_year:'',
+                number: '',
+                category: '',
+                available_copies:''
+            };
+            showForm.value = false;
+        })
+        .catch(error => {
+            console.error("Error adding book:", error);
+        });
     } else {
-        alert('Please fill all fields')
+        alert('Please fill all fields');
     }
 }
+
 
 const filteredBooks = computed(() => {
     return books.value.filter(book => {
