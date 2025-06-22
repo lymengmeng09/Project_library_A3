@@ -86,10 +86,11 @@
             <p v-else class="text-center text-gray-500 mt-10">No books found matching your criteria.</p>
         </div>
     </div>
+
 </template>
 
 <script setup>
-import { ref, computed, onMounted, watch } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import Category from '@/components/CategoryFilter.vue'
 import Search from '@/components/Search.vue'
 import Button from '@/components/Button.vue'
@@ -99,11 +100,128 @@ const searchQuery = ref('')
 const selectedCategory = ref('All')
 const showForm = ref(false)
 const isEditing = ref(false)
-const categories = ['All', 'Fiction', 'Science Fiction', 'Mystery', 'Programming']
-const books = ref([])
+const editingBookId = ref(null)
 const isLoading = ref(true)
+const books = ref([])
+const categories = ['All', 'Fiction', 'Science Fiction', 'Mystery', 'Programming']
 
 const newBook = ref({
+  id: '',
+  title: '',
+  author: '',
+  published_date: '',
+  ISBN: '',
+  image: '',
+  category: '',
+  publication_year: '',
+  available_copies: ''
+})
+
+// Lifecycle
+onMounted(() => {
+  fetchBooks()
+})
+
+// Fetch books
+function fetchBooks() {
+  isLoading.value = true
+  let url = 'http://192.168.108.11:8000/api/books'
+  if (searchQuery.value) {
+    url = `http://192.168.108.11:8000/api/search?query=${encodeURIComponent(searchQuery.value)}`
+  }
+
+  fetch(url)
+    .then(res => res.json())
+    .then(data => {
+      books.value = data
+    })
+    .catch(err => console.error('Error fetching:', err))
+    .finally(() => {
+      isLoading.value = false
+    })
+}
+
+// Save (Add or Edit)
+function saveBook() {
+  const method = isEditing.value ? 'PUT' : 'POST'
+  const url = isEditing.value
+    ? `http://192.168.108.11:8000/api/books/${editingBookId.value}`
+    : 'http://192.168.108.11:8000/api/books'
+
+  fetch(url, {
+    method,
+    headers: {
+      'Content-Type': 'application/json',
+      Accept: 'application/json'
+    },
+    body: JSON.stringify(newBook.value)
+  })
+    .then(res => res.json())
+    .then(data => {
+      if (isEditing.value) {
+        const index = books.value.findIndex(b => b.id === data.id)
+        if (index !== -1) books.value[index] = data
+      } else {
+        books.value.push(data)
+      }
+      resetForm()
+      showForm.value = false
+    })
+    .catch(err => {
+      console.error('Error saving:', err)
+      alert('Save failed')
+    })
+}
+
+// Delete
+function deleteBook(id) {
+  if (!confirm('Are you sure?')) return
+  fetch(`http://192.168.108.11:8000/api/books/${id}`, {
+    method: 'DELETE'
+  })
+    .then(res => {
+      if (!res.ok) throw new Error()
+      books.value = books.value.filter(b => b.id !== id)
+    })
+    .catch(err => {
+      console.error('Delete failed:', err)
+      alert('Could not delete')
+    })
+}
+
+// Edit
+function editBook(book) {
+  newBook.value = { ...book }
+  editingBookId.value = book.id
+  isEditing.value = true
+  showForm.value = true
+}
+
+// Show details
+function showDetails(book) {
+  alert(`
+    Title: ${book.title}
+    Author: ${book.author}
+    ISBN: ${book.ISBN}
+    Published: ${book.published_date}
+    Category: ${book.category}
+    Year: ${book.publication_year}
+    Available: ${book.available_copies}
+  `)
+}
+
+// Cancel edit
+function cancelEdit() {
+  resetForm()
+  showForm.value = false
+  isEditing.value = false
+  editingBookId.value = null
+}
+
+// Reset form
+function resetForm() {
+  newBook.value = {
+    id: '',
     title: '',
     author: '',
     published_date: '',
@@ -112,127 +230,15 @@ const newBook = ref({
     category: '',
     publication_year: '',
     available_copies: ''
-})
-
-// Lifecycle
-onMounted(() => {
-    fetchBooks()
-})
-
-// Fetch books
-function fetchBooks() {
-    isLoading.value = true
-    let url = 'http://192.168.108.11:8000/api/books'
-    if (searchQuery.value) {
-        url = `http://192.168.108.11:8000/api/search?query=${encodeURIComponent(searchQuery.value)}`
-    }
-
-    fetch(url)
-        .then(res => res.json())
-        .then(data => {
-            books.value = data
-        })
-        .catch(err => console.error('Error fetching:', err))
-        .finally(() => (isLoading.value = false))
+  }
 }
 
-// Save (Add or Edit)
-function saveBook() {
-    const method = isEditing.value ? 'PUT' : 'POST'
-    const url = isEditing.value
-        ? `http://192.168.108.11:8000/api/books/${newBook.value.id}`
-        : `http://192.168.108.11:8000/api/books`
-
-    fetch(url, {
-        method,
-        headers: {
-            'Content-Type': 'application/json',
-            Accept: 'application/json'
-        },
-        body: JSON.stringify(newBook.value)
-    })
-        .then(res => res.json())
-        .then(data => {
-            if (isEditing.value) {
-                const index = books.value.findIndex(b => b.id === data.id)
-                if (index !== -1) books.value[index] = data
-            } else {
-                books.value.push(data)
-            }
-            resetForm()
-            showForm.value = false
-        })
-        .catch(err => {
-            console.error('Error saving:', err)
-            alert('Save failed')
-        })
-}
-
-function deleteBook(id) {
-    if (!confirm('Are you sure?')) return
-    fetch(`http://192.168.108.11:8000/api/books/${id}`, { method: 'DELETE' })
-        .then(res => {
-            if (!res.ok) throw new Error()
-            books.value = books.value.filter(b => b.id !== id)
-        })
-        .catch(err => {
-            console.error('Delete failed:', err)
-            alert('Could not delete')
-        })
-}
-
-function editBook(book) {
-    newBook.value = { ...book }
-    isEditing.value = true
-    showForm.value = true
-}
-
-function showDetails(book) {
-    alert(`
-      Title: ${book.title}
-      Author: ${book.author}
-      ISBN: ${book.ISBN}
-      Published: ${book.published_date}
-      Category: ${book.category}
-      Year: ${book.publication_year}
-      Available: ${book.available_copies}
-    `)
-}
-
-function cancelEdit() {
-    resetForm()
-    showForm.value = false
-    isEditing.value = false
-}
-
-function resetForm() {
-    newBook.value = {
-        title: '',
-        author: '',
-        published_date: '',
-        ISBN: '',
-        image: '',
-        category: '',
-        publication_year: '',
-        available_copies: ''
-    }
-}
-
-// Filtering
+// Filtered books
 const filteredBooks = computed(() => {
-    return books.value.filter(book => {
-        const matchesCategory = selectedCategory.value === 'All' || book.category === selectedCategory.value
-        return matchesCategory
-    })
+  return books.value.filter(book => {
+    const matchesCategory = selectedCategory.value === 'All' || book.category === selectedCategory.value
+    return matchesCategory
+  })
 })
-
-// Live search watcher
-watch(searchQuery, () => fetchBooks())
-
-// Toggle form button
-function toggleForm() {
-    resetForm()
-    isEditing.value = false
-    showForm.value = !showForm.value
-}
 </script>
+
