@@ -81,16 +81,20 @@ const categories = ['All', 'Fiction', 'Non-Fiction', 'Science Fiction', 'Mystery
 const books = ref([])
 
 onMounted(() => {
-    fetch("http://127.0.0.1:8080/api/books")
-        .then(response => response.json())
+    fetch("http://192.168.108.11:8000/api/books")
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            return response.json()
+        })
         .then(data => {
-            books.value = data // Or data.data if API wraps books inside data property
+            books.value = data // Adjust if API wraps in { data: [...] }
         })
         .catch(error => {
             console.error("Error fetching books:", error)
         })
 })
-
 const newBook = ref({
     id: '',
     isbn: '',
