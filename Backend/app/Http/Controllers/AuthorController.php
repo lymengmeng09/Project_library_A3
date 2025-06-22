@@ -27,6 +27,7 @@ class AuthorController extends Controller
         'name' =>  $request->name,
         'nationality' =>  $request->nationality,
         'written_book' => $request->written_book,
+        'dob' => $request->dob,
     ]);
 
     return response()->json([
@@ -44,6 +45,7 @@ class AuthorController extends Controller
         $author->name = $request->name;
         $author->nationality = $request->nationality;
         $author->written_book = $request->written_book;
+        $author->dob = $request->dob;
         $author->save();
 
     return response()->json([
@@ -100,6 +102,7 @@ class AuthorController extends Controller
     $author->name = $request->name;
     $author->nationality = $request->nationality;
     $author->written_book = $request->written_book;
+    $author->dob = $request->dob;
     $author->save();
 
     return response()->json([

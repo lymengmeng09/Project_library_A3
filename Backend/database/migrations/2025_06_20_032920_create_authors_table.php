@@ -16,6 +16,7 @@ return new class extends Migration
             $table->string('name', 150);
             $table->string('nationality', 150);
             $table->integer('written_book');
+            $table->integer('dob');
             $table->timestamps();
         });
     }
