@@ -76,7 +76,7 @@ const searchQuery = ref('')
 const selectedCategory = ref('All')
 const showForm = ref(false)
 
-const categories = ['All', 'Fiction', 'Non-Fiction', 'Science Fiction', 'Mystery']
+const categories = ['All', 'Fiction', 'Non-Fiction', 'Science Fiction', 'Mystery','Programming']
 
 const books = ref([])
 
