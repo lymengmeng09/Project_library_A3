@@ -118,23 +118,30 @@ const submit = async () => {
   }
 }
 
-// Cancel / Reset
-const cancelForm = () => {
-  formMember.value = {
-    id: '',
-    firstName: '',
-    lastName: '',
-    email: '',
-    phone_number: '',
-    address: '',
-    about: ''
+const editMember = (member, index) => {
+  newMember.value = { ...member }
+  isEditing.value = true
+  editingIndex.value = index
+  showForm.value = true
+}
+
+// function delete
+const deleteMember = (index) => {
+  if (confirm('Are you sure you want to delete this member?')) {
+    const deletedMember = members.value[index]
+    members.value.splice(index, 1)
+    alert(`Member "${deletedMember.firstName} ${deletedMember.lastName}" has been deleted.`)
   }
+}
+
+// Funstion cancel edit
+const cancelEdit = () => {
+  newMember.value = { id: '', firstName: '', lastName: '', phone: '', address: '' }
   isEditing.value = false
-  editId.value = null
+  editingIndex.value = null
   showForm.value = false
 }
 
-// Filtered search
 const filteredMembers = computed(() => {
   const search = searchQuery.value.toLowerCase()
   return members.value.filter(member => {
