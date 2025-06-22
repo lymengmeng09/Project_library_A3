@@ -7,33 +7,48 @@ use App\Models\BookModel;
 
 class BookController extends Controller
 {
-    /**
-     * GET /api/books - List all books
-     */
+    // List all books
     public function index()
     {
         $books = BookModel::all();
-        return response()->json($books);
+
+        return response()->json([
+            'message' => 'Books retrieved successfully',
+            'data' => $books
+        ], 200);
     }
 
-    /**
-     * GET /api/books/{id} - Get a single book
-     */
-    public function show($id)
+    // Create book form (not needed for API but you can keep it if you want)
+    public function create(Request $request)
     {
-        $book = BookModel::findOrFail($id);
-        return response()->json($book);
+        $book = BookModel::create([
+            'title' =>  $request->title,
+            'author' => $request->author,
+            'ISBN' => $request->ISBN,
+            'image' => $request->image,
+            'category' => $request->category,
+            'publication_year' => $request->publication_year,
+            'available_copies' => $request->available_copies,
+        ]);
+
+        if ($book) {
+            return response()->json([
+                'message' => 'Book created successfully',
+                'data' => $book
+            ], 201);
+        }
+
+        return response()->json([
+            'message' => 'Failed to create book'
+        ], 500);
     }
 
-    /**
-     * POST /api/books - Create a new book
-     */
+    // Store new book (with validation)
     public function store(Request $request)
     {
         $validated = $request->validate([
             'title' => 'required|string',
             'author' => 'required|string',
-            'published_date' => 'required|date',
             'ISBN' => 'required|string|unique:books',
             'image' => 'nullable|string',
             'category' => 'required|string',
@@ -42,45 +57,127 @@ class BookController extends Controller
         ]);
 
         $book = BookModel::create($validated);
-        return response()->json($book, 201);
+
+        if ($book) {
+            return response()->json([
+                'message' => 'Book created successfully',
+                'data' => $book
+            ], 201);
+        }
+
+        return response()->json([
+            'message' => 'Failed to create book'
+        ], 500);
     }
 
-    /**
-     * PUT /api/books/{id} - Update an existing book
-     */
+    // Show a single book
+    public function show($id)
+    {
+        $book = BookModel::find($id);
+
+        if ($book) {
+            return response()->json([
+                'message' => 'Book found',
+                'data' => $book
+            ], 200);
+        }
+
+        return response()->json([
+            'message' => 'Book not found'
+        ], 404);
+    }
+
+    // Edit book info (optional, usually same as update)
+    public function edit(Request $request, $id)
+    {
+        $book = BookModel::find($id);
+
+        if (!$book) {
+            return response()->json([
+                'message' => 'Book not found'
+            ], 404);
+        }
+
+        $updated = $book->update([
+            'title' => $request->title,
+            'author' => $request->author,
+            'ISBN' => $request->ISBN,
+            'image' => $request->image,
+            'category' => $request->category,
+            'publication_year' => $request->publication_year,
+            'available_copies' => $request->available_copies,
+        ]);
+
+        if ($updated) {
+            return response()->json([
+                'message' => 'Book updated successfully',
+                'data' => $book
+            ], 200);
+        }
+
+        return response()->json([
+            'message' => 'Failed to update book'
+        ], 500);
+    }
+
+    // Update book (with validation)
     public function update(Request $request, $id)
     {
-        $book = BookModel::findOrFail($id);
+        $book = BookModel::find($id);
+
+        if (!$book) {
+            return response()->json(['message' => 'Book not found'], 404);
+        }
 
         $validated = $request->validate([
             'title' => 'sometimes|string',
             'author' => 'sometimes|string',
-            'published_date' => 'sometimes|date',
             'ISBN' => 'sometimes|string|unique:books,ISBN,' . $id,
-            'image' => 'sometimes|string',
+            'image' => 'sometimes|nullable|string',
             'category' => 'sometimes|string',
             'publication_year' => 'sometimes|integer',
             'available_copies' => 'sometimes|integer',
         ]);
 
-        $book->update($validated);
-        return response()->json($book);
+        $updated = $book->update($validated);
+
+        if ($updated) {
+            return response()->json([
+                'message' => 'Book updated successfully',
+                'data' => $book
+            ], 200);
+        }
+
+        return response()->json([
+            'message' => 'Failed to update book'
+        ], 500);
     }
 
-    /**
-     * DELETE /api/books/{id} - Delete a book
-     */
+    // Delete a book
     public function destroy($id)
     {
-        $book = BookModel::findOrFail($id);
-        $book->delete();
+        $book = BookModel::find($id);
 
-        return response()->json(['message' => 'Book deleted successfully']);
+        if (!$book) {
+            return response()->json([
+                'message' => 'Book not found'
+            ], 404);
+        }
+
+        $deleted = $book->delete();
+
+        if ($deleted) {
+            return response()->json([
+                'message' => 'Book deleted successfully'
+            ], 200);
+        }
+
+        return response()->json([
+            'message' => 'Failed to delete book'
+        ], 500);
     }
 
-    /**
-     * GET /api/search?query= - Search books by title or author
-     */
+    // Search books by title or author
     public function search(Request $request)
     {
         $query = $request->input('query');
@@ -89,14 +186,9 @@ class BookController extends Controller
             ->orWhere('author', 'LIKE', "%{$query}%")
             ->get();
 
-        return response()->json($books);
-    }
-
-    /**
-     * GET /api/test - API status check
-     */
-    public function test()
-    {
-        return response()->json(['message' => 'API working!']);
+        return response()->json([
+            'message' => 'Search results',
+            'data' => $books
+        ], 200);
     }
 }

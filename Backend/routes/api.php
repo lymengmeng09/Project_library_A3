@@ -40,13 +40,23 @@ Route::prefix('/authors')->group(function(){
 
 
 
-// Books routes
-Route::get('/books', [BookController::class, 'index']);
-Route::get('/books/{id}', [BookController::class, 'show']);
-Route::post('/books', [BookController::class, 'store']);
-Route::put('/books/{id}', [BookController::class, 'update']);
-Route::delete('/books/{id}', [BookController::class, 'destroy']);
+
+// Book Routes
+Route::prefix('books')->group(function () {
+    Route::get('/', [BookController::class, 'index'])->name('books.index'); // GET all books
+    Route::post('/create', [BookController::class, 'create']);               // GET
+    Route::post('/store', [BookController::class, 'store']);               // POST new book
+    Route::get('/show/{id}', [BookController::class, 'show']);             // GET one book
+    Route::put('/update/{id}', [BookController::class, 'update']);           // PUT update book
+    Route::delete('/destroy/{id}', [BookController::class, 'destroy']);       // DELETE book
+});
+
+// Book search route
 Route::get('/search', [BookController::class, 'search']);
+
+
+
+
 
 
 
