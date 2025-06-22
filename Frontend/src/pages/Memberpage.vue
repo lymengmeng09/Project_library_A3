@@ -45,6 +45,7 @@
       </div>
       <p v-else class="text-center text-gray-500 mt-10">No members found matching your search.</p>
     </div>
+    
   </div>
 </template>
 
