@@ -109,6 +109,28 @@ const addMember = async () => {
   }
 }
 
+const editMember = (member, index) => {
+  newMember.value = { ...member }
+  isEditing.value = true
+  editingIndex.value = index
+  showForm.value = true
+}
+
+const deleteMember = (index) => {
+  if (confirm('Are you sure you want to delete this member?')) {
+    const deletedMember = members.value[index]
+    members.value.splice(index, 1)
+    alert(`Member "${deletedMember.firstName} ${deletedMember.lastName}" has been deleted.`)
+  }
+}
+
+const cancelEdit = () => {
+  newMember.value = { id: '', firstName: '', lastName: '', phone: '', address: '' }
+  isEditing.value = false
+  editingIndex.value = null
+  showForm.value = false
+}
+
 const filteredMembers = computed(() => {
   const search = searchQuery.value.toLowerCase()
   return members.value.filter(member => {
