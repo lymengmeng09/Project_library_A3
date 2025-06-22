@@ -72,30 +72,32 @@
       </form>
     </div>
 
-    <!-- Loading and Error States -->
-    <p v-if="isLoading" class="text-center mt-10">Loading authors...</p>
-    <p v-if="error" class="text-center text-red-600 mt-10">{{ error }}</p>
-
+    
     <!-- Author List -->
-    <div
-      v-if="filteredAuthors.length && !isLoading && !error"
-      class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mt-10"
-    >
-      <div
-        v-for="author in filteredAuthors"
-        :key="author.id"
-        class="bg-white p-4 rounded-lg shadow hover:shadow-md transition"
-      >
-        <h2 class="text-xl font-semibold">{{ author.name }}</h2>
-        <p class="text-gray-600 text-sm">📅 DOB: {{ author.dob || 'N/A' }}</p>
-        <p class="text-gray-600 text-sm">📚 Books: {{ author.written_book }}</p>
-        <p class="text-gray-600 text-sm">🌍 Nationality: {{ author.nationality }}</p>
+    <div v-if="filteredAuthors.length"
+      class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mt-10">
+      <div v-for="author in filteredAuthors" :key="author.name + author.dob"
+        class="bg-white p-4 rounded-lg shadow hover:shadow-md transition flex flex-col justify-between">
+        <div>
+          <h2 class="text-xl font-semibold">{{ author.name }}</h2>
+          <p class="text-gray-600 text-sm">📅 DOB: {{ author.dob }}</p>
+          <p class="text-gray-600 text-sm">📚 Books: {{ author.books }}</p>
+          <p class="text-gray-600 text-sm">🌍 Nationality: {{ author.nationality }}</p>
+        </div>
+
+        <div class="flex gap-2 mt-3 justify-end">
+          <button @click="editAuthor(author)"
+            class="px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600">Edit</button>
+          <button @click="deleteAuthor(author.id)"
+            class="px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600">Delete</button>
+          <button @click="showDetails(author)"
+            class="px-3 py-1 bg-gray-500 text-white rounded hover:bg-gray-600">Details</button>
+        </div>
       </div>
     </div>
 
-    <p v-else-if="!isLoading && !error" class="text-center text-gray-500 mt-10">
-      No authors found matching your criteria.
-    </p>
+
+    <p v-else class="text-center text-gray-500 mt-10">No authors found matching your criteria.</p>
   </div>
 </template>
 

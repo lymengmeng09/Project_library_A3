@@ -45,6 +45,7 @@
       </div>
       <p v-else class="text-center text-gray-500 mt-10">No members found matching your search.</p>
     </div>
+    
   </div>
 </template>
 
@@ -124,6 +125,7 @@ const editMember = (member, index) => {
   showForm.value = true
 }
 
+// function delete
 const deleteMember = (index) => {
   if (confirm('Are you sure you want to delete this member?')) {
     const deletedMember = members.value[index]
@@ -132,6 +134,7 @@ const deleteMember = (index) => {
   }
 }
 
+// Funstion cancel edit
 const cancelEdit = () => {
   newMember.value = { id: '', firstName: '', lastName: '', phone: '', address: '' }
   isEditing.value = false
