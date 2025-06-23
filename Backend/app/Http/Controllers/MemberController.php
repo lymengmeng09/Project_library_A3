@@ -118,29 +118,27 @@ return response()->json([
     /**
      * Update the specified resource in storage.
      */
-   public function update(Request $request, int $id)
+   public function update(Request $request, $id)
 {
-    $updated = Member::where('id', $id)->update([
-        'full_name' => $request->full_name,
-        'email' => $request->email,
-        'phone_number' => $request->phone_number,
-        'about' => $request->about,
-    ]);
-
-    if ($updated) {
-        // Fetch the updated member
-        $member = Member::find($id);
-
-        return response()->json([
-            'message' => 'Member updated successfully',
-            'data' => $member
-        ], 200);
+    $member = Member::find($id);
+    if (!$member) {
+        return response()->json(['message' => 'Member not found'], 404);
     }
 
-    return response()->json([
-        'message' => 'Member not found or update failed'
-    ], 404);
+    $validated = $request->validate([
+        'firstName' => 'required|string|max:255',
+        'lastName' => 'required|string|max:255',
+        'email' => 'required|email',
+        'phone_number' => 'required|string',
+        'address' => 'required|string',
+        'about' => 'required|string',
+    ]);
+
+    $member->update($validated);
+
+    return response()->json(['data' => $member], 200);
 }
+
 
 
     /**
