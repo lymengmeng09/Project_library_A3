@@ -26,10 +26,12 @@ class MemberController extends Controller
     public function create(Request $request)
     {
         $members = Member::create([
-        'full_name' => $request->full_name,
+        'firstName' => $request->firstName,
+        'lastName' => $request->lastName,
         'email' => $request->email,
         'phone_number' => $request->phone_number,
-        'about' => $request->about
+        'about' => $request->about,
+        'address'=>$request->address
     ]);
         
        if($members){
@@ -49,10 +51,12 @@ class MemberController extends Controller
     public function store(Request $request)
     {
         $member = Member::create([
-        'full_name' => $request->full_name,
+        'firstName' => $request->firstName,
+        'lastName' => $request->lastName,
         'email' => $request->email,
         'phone_number' => $request->phone_number,
-        'about' => $request->about
+        'about' => $request->about,
+        'address'=>$request->address
     ]);
 
     if ($member) {

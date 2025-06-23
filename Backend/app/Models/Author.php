@@ -14,5 +14,6 @@ class Author extends Model
         'name',
         'nationality',
         'written_book',
+        'dob'
     ];
 }
