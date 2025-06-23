@@ -11,12 +11,18 @@
     <div v-if="showForm" class="w-full max-w-md mx-auto mt-6 bg-gray-100 p-6 rounded-lg shadow">
       <h2 class="text-xl font-bold mb-4">{{ isEditing ? 'Edit' : 'Add' }} Member</h2>
       <form @submit.prevent="submit">
-        <input v-model="formMember.firstName" type="text" placeholder="First Name" class="w-full px-3 py-2 mb-3 rounded border" required />
-        <input v-model="formMember.lastName" type="text" placeholder="Last Name" class="w-full px-3 py-2 mb-3 rounded border" required />
-        <input v-model="formMember.email" type="email" placeholder="Email" class="w-full px-3 py-2 mb-3 rounded border" required />
-        <input v-model="formMember.phone_number" type="text" placeholder="Phone Number" class="w-full px-3 py-2 mb-3 rounded border" required />
-        <input v-model="formMember.address" type="text" placeholder="Address" class="w-full px-3 py-2 mb-3 rounded border" required />
-        <input v-model="formMember.about" type="text" placeholder="About" class="w-full px-3 py-2 mb-4 rounded border" required />
+        <input v-model="formMember.firstName" type="text" placeholder="First Name"
+          class="w-full px-3 py-2 mb-3 rounded border" required />
+        <input v-model="formMember.lastName" type="text" placeholder="Last Name"
+          class="w-full px-3 py-2 mb-3 rounded border" required />
+        <input v-model="formMember.email" type="email" placeholder="Email" class="w-full px-3 py-2 mb-3 rounded border"
+          required />
+        <input v-model="formMember.phone_number" type="text" placeholder="Phone Number"
+          class="w-full px-3 py-2 mb-3 rounded border" required />
+        <input v-model="formMember.address" type="text" placeholder="Address"
+          class="w-full px-3 py-2 mb-3 rounded border" required />
+        <input v-model="formMember.about" type="text" placeholder="About" class="w-full px-3 py-2 mb-4 rounded border"
+          required />
         <button type="submit" class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">
           {{ isEditing ? 'Update' : 'Add' }} Member
         </button>
@@ -30,7 +36,8 @@
 
     <!-- Member List -->
     <div class="flex justify-center mt-8">
-      <div v-if="filteredMembers.length" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 w-10/12">
+      <div v-if="filteredMembers.length"
+        class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 w-10/12">
         <div v-for="member in filteredMembers" :key="member.id" class="bg-white p-4 rounded-lg shadow hover:shadow-lg">
           <h2 class="text-xl font-semibold mb-1">{{ member.firstName }} {{ member.lastName }}</h2>
           <p class="text-sm text-gray-600">Email: {{ member.email }}</p>
@@ -38,12 +45,32 @@
           <p class="text-sm text-gray-600">Address: {{ member.address }}</p>
           <p class="text-sm text-gray-600">About: {{ member.about }}</p>
           <div class="flex justify-end gap-2 mt-2">
-            <button @click="editMember(member)" class="text-blue-600 hover:underline">Edit</button>
-            <button @click="deleteMember(member.id)" class="text-red-600 hover:underline">Delete</button>
+            <button @click="editMember(member)"
+              class="px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600">Edit</button>
+            <button @click="deleteMember(member.id)"
+              class="px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600">Delete</button>
+            <button @click="showDetails(member)"
+              class="px-3 py-1 bg-gray-500 text-white rounded hover:bg-gray-600">Details</button>
           </div>
         </div>
       </div>
       <p v-else class="text-center text-gray-500 mt-10">No members found.</p>
+    </div>
+
+    <!-- Detail View -->
+    <div v-if="detailMember" class="max-w-md mx-auto mt-10 bg-white border border-gray-300 p-6 rounded shadow">
+      <h2 class="text-xl font-bold mb-4">Member Details</h2>
+      <p><strong>ID:</strong> {{ detailMember.id }}</p>
+      <p><strong>First Name:</strong> {{ detailMember.firstName }}</p>
+      <p><strong>Last Name:</strong> {{ detailMember.lastName }}</p>
+      <p><strong>Email:</strong> {{ detailMember.email }}</p>
+      <p><strong>Phone:</strong> {{ detailMember.phone_number }}</p>
+      <p><strong>Address:</strong> {{ detailMember.address }}</p>
+      <p><strong>About:</strong> {{ detailMember.about }}</p>
+      <button @click="detailMember.value = null"
+        class="mt-4 px-4 py-2 bg-gray-600 text-white rounded hover:bg-gray-700">
+        Close
+      </button>
     </div>
   </div>
 </template>
@@ -59,6 +86,7 @@ const searchQuery = ref('')
 const showForm = ref(false)
 const isEditing = ref(false)
 const editId = ref(null)
+const detailMember = ref(null)
 
 const formMember = ref({
   firstName: '',
@@ -130,6 +158,12 @@ const editMember = (member) => {
   editId.value = member.id
   isEditing.value = true
   showForm.value = true
+  detailMember.value = null // Hide detail view when editing
+}
+
+const showDetails = (member) => {
+  detailMember.value = member
+  showForm.value = false
 }
 
 const deleteMember = async (id) => {
@@ -137,6 +171,9 @@ const deleteMember = async (id) => {
   try {
     await axios.delete(`http://192.168.108.11:8000/api/members/delete/${id}`)
     members.value = members.value.filter(m => m.id !== id)
+    if (detailMember.value?.id === id) {
+      detailMember.value = null
+    }
   } catch (err) {
     console.error('Delete failed:', err)
     alert('Failed to delete member.')
