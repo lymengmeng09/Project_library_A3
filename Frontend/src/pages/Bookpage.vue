@@ -118,7 +118,7 @@ const filteredCategories = computed(() => categories.filter(cat => cat !== 'All'
 // Fetch books from backend API
 onMounted(async () => {
     try {
- const res = await axios.get('http://127.0.0.1:8000/api/books')
+ const res = await axios.get('http://192.168.108.11:8000/api/books')
 
         books.value = res.data.data // assuming your API returns { message, data: [...] }
     } catch (error) {
@@ -179,14 +179,14 @@ async function saveBook() {
         }
 
         if (isEditing.value) {
-            const res = await axios.put(`http://127.0.0.1:8000/api/books/update/${editingBookId.value}`, newBook.value)
+            const res = await axios.put(`http://192.168.108.11:8000/api/books/update/${editingBookId.value}`, newBook.value)
             const index = books.value.findIndex(b => b.id === editingBookId.value)
             if (index !== -1) {
                 books.value[index] = res.data.data
             }
             alert('Book updated successfully.')
         } else {
-            const res = await axios.post('http://127.0.0.1:8000/api/books/store', newBook.value)
+            const res = await axios.post('http://192.168.108.11:8000/api/books/store', newBook.value)
             books.value.push(res.data.data)
             alert('Book added successfully.')
         }
@@ -204,7 +204,7 @@ async function saveBook() {
 async function deleteBook(id) {
     if (!confirm('Are you sure you want to delete this book?')) return
     try {
-        await axios.delete(`http://127.0.0.1:8000/api/books/destroy/${id}`)
+        await axios.delete(`http://192.168.108.11:8000/api/books/destroy/${id}`)
         books.value = books.value.filter(book => book.id !== id)
         alert('Book deleted successfully.')
     } catch (error) {
